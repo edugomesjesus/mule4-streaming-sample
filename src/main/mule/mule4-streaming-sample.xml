@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c44ba600-b82c-4959-947b-ca7ffe74dc6b" >
+		<http:listener-connection host="0.0.0.0" port="9090" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="8713df8d-acbc-4171-a0d3-d66857f7a14c" >
+		<file:connection workingDir="C:\Users\eduardo\studio-workspace\mule4-streaming-sample\src\main\resources" />
+	</file:config>
+	<flow name="streamingemailappFlow" doc:id="201e34c9-8a6e-4227-82c8-9904afc5b002" >
+		<http:listener doc:name="Listener" doc:id="2151d807-ede0-4a5e-9d7d-aa7075cce69b" config-ref="HTTP_Listener_config" path="/"/>
+		<async doc:name="Async" doc:id="90086abb-20a8-4a6a-8163-22df6a5da07e" >
+			<file:write doc:name="Write" doc:id="1b222be9-361e-4b2b-aae4-4a8cf8257f45" path="connect-out/contacts.txt" config-ref="File_Config" mode="APPEND">
+				<file:content ><![CDATA[#[%dw 2.0
+ output application/json
+ ---
+payload.customers map { 
+"email": $.email
+}
+]]]></file:content>
+			</file:write>
+		</async>
+		<foreach doc:name="For Each" doc:id="fc20a349-9c53-44d2-b900-bfdfddd59b66" collection="#[payload.customers]">
+			<choice doc:name="Choice" doc:id="09c6c1b0-a847-49ce-970b-1df05ebd756f" >
+				<when expression="#[payload.order != null]" >
+					<file:write doc:name="Write" doc:id="7894a9f1-1925-4107-9639-7f31675ec8a3" path="#['connect-out/output$(vars.counter).csv']" config-ref="File_Config"/>
+				</when>
+				<otherwise >
+					<logger level="INFO" doc:name="Logger" doc:id="dc2ee7cd-b4d6-4612-8368-7e0e2e5e26a7" message="#['Nada a se fazer!']"/>
+				</otherwise>
+			</choice>
+		</foreach>
+	</flow>
+</mule>
