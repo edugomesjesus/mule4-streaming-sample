@@ -3,8 +3,6 @@
 Este sample demonstra o processo assíncrono de escrita em um arquivo no sistema de arquivos percorrendo os itens de uma lista JSON enviada via POST. O arquivo criado extrai o campo **email** dos elementos iterando sobre deles com o uso do __dataweave 2.0__.
 Em seguida, para cada iten processado que possue o elemento **order** é criado um novo aquivo .csv no sistema de arquivos, caso contrário uma mensagem é impressa no console.
 
-This demonstrates calling HTTP URL to get JSON data and extract content out of nested JSON for logging purpose to answer this question - https://forums.mulesoft.com/questions/92885/extract-value-from-nested-json-object-mule-4.html
-
 Demonstração dos seguintes novos recursos do Mule 4: 
  - Streaming;
  - Acesso direto aos dados: Não é mais necessário transformar os dados em um formato específico para manipulação, isto é feito automaticamente;
